@@ -2,6 +2,7 @@ from django.shortcuts import render
 from dotenv import load_dotenv
 import json
 import os
+import sys
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import ChatPromptTemplate
 from langchain.schema import BaseOutputParser
@@ -16,6 +17,13 @@ vi_account_id = os.getenv('vi_account_id')
 vi_api_key = os.getenv('vi_api_key')
 vi_location = os.getenv('vi_location')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+
+# Check if the environment variables are loaded, if not exit the system
+required_env_vars = ['vi_account_id', 'vi_api_key', 'vi_location', 'OPENAI_API_KEY']
+for var in required_env_vars:
+    if os.getenv(var) is None:
+        sys.exit(f"Error: The environment variable {var} is not set. Exiting the application.")
+
 
 
 from onclusive_case.video_indexer import VideoIndexer
