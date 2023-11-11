@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .container {
+            display: flex;
+            margin-bottom: 20px; /* Optional space between iframes and textarea */
+        }
+        .inline {
+            margin-right: 10px; /* Optional space between iframes */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <iframe id="viPlayer" width="560" height="315" src="https://www.videoindexer.ai/embed/player/22214be4-1a65-4f96-b2cc-b490c76e2db7/53a3c8a677/?&locale=en&location=trial&autoplay=true" frameborder="0" allowfullscreen></iframe>
+        <iframe width="680" height="1200" src="https://www.videoindexer.ai/embed/insights/22214be4-1a65-4f96-b2cc-b490c76e2db7/53a3c8a677/?widgets=namedEntities,people,topics" frameborder="0" allowfullscreen></iframe>
+        <script src="https://breakdown.blob.core.windows.net/public/vb.widgets.mediator.js"></script>
+    </div>
+
+        <!-- Django template for displaying transcripts -->
+    <div id="transcript-list" style="height: 500px; width: 559px; overflow-y: auto;">
+      <ul style="list-style-type: none; padding: 0; margin: 0;">
+        {% for line in transcription %}
+          <li style="margin-bottom: 10px;">
+            <span class="timestamp" style="font-weight: bold;">{{ line.time }}</span>
+            <span>{{ line.text }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+   <div id="combined-list">
+    {% for brand, details in brand_summaries.items %}
+        <div>
+            <h3>{{ brand }}</h3>
+
+            <div>
+                <strong>Timestamps:</strong>
+                {% for time in details.1 %}
+                    <a href="#" onclick="jumpToTime('{{ time }}')">{{ time }}</a>
+                {% endfor %}
+            </div>
+
+            <div>
+                <strong>Summary:</strong>
+                <p>{{ details.0 }}</p>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+
+
+<script>
+(function(){
+    var viPlayerIframe = document.getElementById("viPlayer");
+
+    window.jumpToTime = function(timestamp) {
+        var time = convertTimestampToSeconds(timestamp);
+        notifyPlayer(time);
+    };
+
+    function notifyPlayer(time) {
+        let payload = {
+            time: time,
+            origin: "https://www.videoindexer.ai"
+        };
+        if ('postMessage' in window) {
+            try {
+                viPlayerIframe.contentWindow.postMessage(payload, payload.origin);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    }
+
+    function convertTimestampToSeconds(timestamp) {
+        var parts = timestamp.split(':');
+        return parseInt(parts[0]) * 3600 + parseInt(parts[1]) * 60 + parseFloat(parts[2]);
+    }
+}());
+</script>
+
+
+
+</body>
+</html>
