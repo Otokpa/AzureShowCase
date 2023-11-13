@@ -9,6 +9,7 @@ from langchain.schema import BaseOutputParser
 import requests
 
 from onclusive_case.az_text_analysis import AzTextAnalysis
+from onclusive_case.video_indexer import VideoIndexer
 
 load_dotenv()
 
@@ -17,16 +18,6 @@ vi_account_id = os.getenv('vi_account_id')
 vi_api_key = os.getenv('vi_api_key')
 vi_location = os.getenv('vi_location')
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-
-# Check if the environment variables are loaded, if not exit the system
-required_env_vars = ['vi_account_id', 'vi_api_key', 'vi_location', 'OPENAI_API_KEY']
-for var in required_env_vars:
-    if os.getenv(var) is None:
-        sys.exit(f"Error: The environment variable {var} is not set. Exiting the application.")
-
-
-
-from onclusive_case.video_indexer import VideoIndexer
 
 
 class DictionaryOutputParser(BaseOutputParser):
@@ -39,19 +30,33 @@ class DictionaryOutputParser(BaseOutputParser):
 
 def get_transcript(request):
 
-    VI = VideoIndexer(vi_api_key=vi_api_key, vi_location=vi_location, vi_account_id=vi_account_id)
-    list_of_videos = VI.get_all_videos_list()
+    from_file = True
+    video_id = '53a3c8a677'
 
-    # Get the ID of the first video in the list
-    video_id = list_of_videos[0]['id']
+    if from_file:
+        summaries_file_path = f'onclusive_case/data/{video_id}_transcription.json'
+        with open(summaries_file_path, 'r') as f:
+            transcription = json.load(f)
 
-    index_data = VI.get_video_info(video_id)
+    else:
+        VI = VideoIndexer(vi_api_key=vi_api_key, vi_location=vi_location, vi_account_id=vi_account_id)
+        list_of_videos = VI.get_all_videos_list()
 
-    # Get the video insights
-    insights_data = VI.get_video_insights(video_id)
+        # Get the ID of the first video in the list
+        video_id = list_of_videos[0]['id']
 
-    # get the transcript
-    transcription, raw_text = VI.get_transcript_text_from_insights(insights_data)
+        index_data = VI.get_video_info(video_id)
+
+        # Get the video insights
+        insights_data = VI.get_video_insights(video_id)
+
+        # get the transcript
+        transcription, _ = VI.get_transcript_text_from_insights(insights_data)
+
+        # save the transcript to a file
+        os.makedirs(os.path.dirname(f'onclusive_case/data/{video_id}_transcription.json'), exist_ok=True)
+        with open(f'onclusive_case/data/{video_id}_transcription.json', 'w') as f:
+            json.dump(transcription, f)
 
     # # get named entities
     # first_video_insight = insights_data['videos'][0]
@@ -136,6 +141,13 @@ def get_transcript(request):
             trans_with_times += t + '\n'
 
         summaries = chain.invoke({"text": trans_with_times})
+
+        # Get sentiment analysis of summaries
+        az_text_analysis = AzTextAnalysis()
+        for brand in summaries:
+            summary = summaries[brand][0]
+            sentiment = az_text_analysis.get_sentiment(summary)
+            summaries[brand].append(sentiment)
 
         os.makedirs(os.path.dirname(summaries_file_path), exist_ok=True)
 
