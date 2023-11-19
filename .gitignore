@@ -1,2 +1,4 @@
-!/venv/
+venv/
+onclusive_case/__pycache__/
+azzure_showcase/__pycache__/
 !/.env
