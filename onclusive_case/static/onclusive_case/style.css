@@ -1,0 +1,88 @@
+/* style.css */
+
+ul {
+    list-style-type: none; /* Removes bullet points */
+    padding-left: 0; /* Removes default padding */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+.introduction-text {
+
+    max-width: 800px; /* Adjust as needed */
+    margin: 20px auto; /* Centering the text block */
+    padding: 15px;
+}
+
+.introduction-text h2 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.introduction-text ul {
+    padding-left: 20px;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap; /* Allow the containers to wrap on smaller screens */
+    justify-content: center; /* Center the iframes */
+    margin-bottom: 20px;
+}
+
+.container iframe {
+    margin: 5px; /* Spacing around iframes */
+    border-radius: 5px; /* Optional: rounds the corners of the iframe */
+}
+
+#transcript-list {
+    height: 500px;
+    width: 640px;
+    overflow-y: auto;
+    margin: 20px auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+#transcript-list ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#transcript-list li {
+    margin-bottom: 10px;
+}
+
+.timestamp {
+    font-weight: bold;
+}
+
+#combined-list > div {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+#combined-list h3 {
+    color: #444;
+    margin: 10px 0;
+}
+
+#combined-list p {
+    margin: 5px 0;
+}
+
+#combined-list a {
+    text-decoration: none;
+    color: #06f;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+#combined-list a:hover {
+    text-decoration: underline;
+}
