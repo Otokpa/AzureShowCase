@@ -5,8 +5,8 @@
 }
 
 @font-face {
-    font-family: NunitoSans;
-    src: url('/static/onclusive_case/fonts/NunitoSans_10pt-Regular.ttf');
+    font-family: 'NunitoSans';
+    src: url('https://djangostaticfiles.blob.core.windows.net/static/onclusive_case/fonts/NunitoSans_10pt-Regular.ttf') format('truetype');
 }
 
 body {
